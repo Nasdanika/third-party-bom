@@ -1,3 +1,3 @@
-# Nasdanika Bill of Materials
+# Nasdanika Third Party Bill of Materials
 
-BOM pom.xml
+Third party BOM pom.xml
