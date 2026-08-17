@@ -1,0 +1,130 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.nasdanika</groupId>
+	<version>2026.8.0</version>
+	<artifactId>third-party-bom</artifactId>
+	<packaging>pom</packaging>
+	<name>Nasdanika third-party BOM</name>
+	<description>Nasdanika third-party dependencies</description>
+
+	<url>https://github.com/Nasdanika/third-party-bom</url>
+		
+	<licenses>
+		<license>
+			<name>Eclipse Public License 2.0</name>
+			<url>https://nasdanika.org/builds/master/eclipse-public-license-2.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/Nasdanika/third-party-bom</url>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>3.5.3</version>
+			</extension>
+		</extensions>
+		<plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <!-- Replaces the original pom.xml with the flattened version during install/deploy -->
+                    <updatePomFile>true</updatePomFile>
+                    
+                    <!-- 'resolveCiFriendliesOnly' is the safest mode for a Parent POM. 
+                         It resolves variables like ${revision}, ${sha1}, and ${changelist} 
+                         without stripping out other important sections of your child modules. -->
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <!-- Generate the flattened POM during the build -->
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <!-- Clean up the generated flattened POMs on 'mvn clean' -->
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>6.1.0</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>6.1.0</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>3.27.7</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	 <profiles>
+		<profile>
+			<id>central</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.2.8</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>	
+					<plugin>					
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.10.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<autoPublish>true</autoPublish>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
